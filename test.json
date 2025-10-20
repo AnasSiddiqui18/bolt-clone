@@ -1,0 +1,29 @@
+[
+    {
+        "id": "bfbde90c-0cad-41b8-8961-0f418e008740",
+        "name": "todo-app",
+        "children": [
+            {
+                "id": "d409e3ac-8752-4209-88cf-a321520c19cd",
+                "name": "src",
+                "children": [
+                    {
+                        "id": "dfa7594b-06fc-4d56-8018-0be7ea793912",
+                        "name": "app",
+                        "children": [
+                            {
+                                "id": "847db8e1-2e3e-4d00-8b30-b1511c9a83bf",
+                                "name": "components",
+                                "children": []
+                            },
+                            {
+                                "id": "90a1ae4d-8161-44a7-bfae-2efd2bfc9697",
+                                "name": "page.tsx"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+]
