@@ -180,6 +180,8 @@ function addChildNodes(
     currentNode: updatedFileStructure,
     remainingPath: string // src/components
 ) {
+    console.log('add child function runs')
+
     const pathSegments = splitPathSegments(remainingPath) // ['src', 'components']
     if (!pathSegments.length) return currentNode
 
@@ -250,6 +252,7 @@ function buildFolderTree(files: fileStructure[]) {
             // prettier-ignore
 
             const rootFolder = pathSegments[0]
+            const childPath = pathSegments.slice(1).join('/')
 
             const doesRootFolderExists = fileStructure.find((a) => {
                 return a.name === rootFolder
@@ -260,11 +263,12 @@ function buildFolderTree(files: fileStructure[]) {
 
                 const newFolderNode = {
                     id: crypto.randomUUID(),
-                    name: pathSegments[0],
+                    name: rootFolder,
                     children: [],
                 }
 
                 fileStructure.push(newFolderNode)
+                addChildNodes(newFolderNode, childPath)
 
                 return
             } else if (pathSegments.length && doesRootFolderExists) {
@@ -282,14 +286,8 @@ function buildFolderTree(files: fileStructure[]) {
 const test = [
     {
         name: 'components',
-        path: '/home/user/todo-app/src/app/components',
-        type: 'file',
-    },
-
-    {
-        name: 'components',
-        path: '/home/user/todo-app/src/app/page.tsx',
-        type: 'file',
+        path: '/home/user/todo-app/src/app',
+        type: 'dir',
     },
 ] as const
 
