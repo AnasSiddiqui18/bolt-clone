@@ -45,24 +45,9 @@ export function Preview({
 }: {
     teamID: string | undefined
     accessToken: string | undefined
-    selectedTab:
-        | 'code'
-        | 'fragment'
-        | 'terminal'
-        | 'interpreter'
-        | 'editor'
-        | 'files'
-        | 'ide'
+    selectedTab: 'fragment' | 'terminal' | 'files' | 'ide'
     onSelectedTabChange: Dispatch<
-        SetStateAction<
-            | 'code'
-            | 'fragment'
-            | 'terminal'
-            | 'interpreter'
-            | 'editor'
-            | 'files'
-            | 'ide'
-        >
+        SetStateAction<'fragment' | 'terminal' | 'ide'>
     >
     isChatLoading: boolean
     isPreviewLoading: boolean
@@ -93,8 +78,6 @@ export function Preview({
                 if (onSelectFile) {
                     onSelectFile({ path: data.path, content: data.content })
                 }
-                // Switch to editor tab
-                onSelectedTabChange('editor')
             }
         } catch (error) {
             console.error('Error loading sandbox file:', error)
@@ -121,20 +104,13 @@ export function Preview({
     }
 
     return (
-        <div className="absolute md:relative z-10 top-0 left-0 shadow-2xl md:rounded-tl-3xl md:rounded-bl-3xl md:border-l md:border-y bg-popover h-full w-full overflow-auto">
+        <div className="absolute md:relative z-10 top-0 left-0 shadow-2xl md:rounded-tl-3xl md:rounded-bl-3xl md:border-l md:border-y bg-popover w-full">
             <Tabs
                 value={selectedTab}
                 onValueChange={(value) => {
                     console.log('Tab changed to:', value)
                     onSelectedTabChange(
-                        value as
-                            | 'code'
-                            | 'fragment'
-                            | 'terminal'
-                            | 'interpreter'
-                            | 'editor'
-                            | 'files'
-                            | 'ide'
+                        value as 'fragment' | 'terminal' | 'ide'
                     )
                 }}
                 className="h-full flex flex-col items-start justify-start"
@@ -158,7 +134,7 @@ export function Preview({
                     <div className="flex justify-center relative z-20">
                         <TabsList className="px-1 py-0 border h-8 relative z-30">
                             <TabsTrigger
-                                disabled={!result}
+                                // disabled={!result}
                                 className="font-normal text-xs py-1 px-2 gap-1 flex items-center"
                                 value="fragment"
                             >
@@ -197,7 +173,7 @@ export function Preview({
                         {/* Add any additional buttons here */}
                     </div>
                 </div>
-                <div className="overflow-y-auto w-full h-full">
+                <div className="w-full h-full">
                     <TabsContent value="fragment" className="h-full">
                         {result ? (
                             <FragmentPreview

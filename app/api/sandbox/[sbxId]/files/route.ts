@@ -1,25 +1,11 @@
 import { Sandbox } from '@e2b/code-interpreter'
-import { FileSystemNode } from '@/components/file-tree'
+import { buildFolderTree } from '@/helpers/helpers'
+import { writeFileSync } from 'fs'
 
 export const maxDuration = 60
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 export const fetchCache = 'force-no-store'
-
-const excludedPaths = ['node_modules', '.next', '.npm', '.config', 'public']
-const excludedNames = [
-    '.bash_logout',
-    '.bashrc',
-    '.profile',
-    'README.md',
-    'globe.svg',
-    'file.svg',
-    'next.svg',
-    'vercel.svg',
-    'favicon.ico',
-    'window.svg',
-    '.update-notifier-last-checked',
-]
 
 /**
  * GET /api/sandbox/[sbxId]/files
@@ -61,10 +47,31 @@ export async function GET(
             user: 'root',
         })
 
-        // Convert E2B file structure to our FileSystemNode format
-        const files = convertE2BFilesToTree(filesList)
+        const constantFiles = [
+            {
+                name: 'tsconfig.json',
+                type: 'file',
+                path: '/home/user/tsconfig.json',
+                size: 602,
+                mode: 420,
+                permissions: '-rw-r--r--',
+                owner: 'user',
+                group: 'user',
+                modifiedTime: '2025-10-19T00:39:56.257Z',
+            },
+        ]
 
-        return new Response(JSON.stringify({ files }), {
+        // Convert E2B file structure to our FileSystemNode format
+        const files = buildFolderTree(filesList)
+
+        writeFileSync('file-list.json', JSON.stringify(filesList))
+
+        // console.log('writing files inside file-list.json')
+
+        // writeFileSync('data.json', JSON.stringify(files))
+        // console.log('files', files.length)
+
+        return new Response(JSON.stringify({ files: files }), {
             headers: { 'Content-Type': 'application/json' },
         })
     } catch (error: any) {
@@ -77,32 +84,4 @@ export async function GET(
             { status: 500, headers: { 'Content-Type': 'application/json' } }
         )
     }
-}
-
-/**
- * Convert E2B file list to our FileSystemNode structure
- */
-function convertE2BFilesToTree(e2bFiles: any[]): FileSystemNode[] {
-    const files = e2bFiles
-        .filter(
-            (file) =>
-                !excludedPaths.some((p) => file.path.includes(p)) &&
-                !excludedNames.includes(file.name)
-        )
-        .map((file) => {
-            const node: FileSystemNode = {
-                name: file.name,
-                isDirectory: file.isDir,
-                path: file.path,
-            }
-
-            // Recursively convert children if it's a directory
-            if (file.isDir && file.children) {
-                node.children = convertE2BFilesToTree(file.children)
-            }
-
-            return node
-        })
-
-    return files
 }

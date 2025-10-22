@@ -1,9 +1,0 @@
-{
-    "label": "src",
-    "children": [
-        {
-            "label": "app",
-            "children": [{ "label": "tailwind.config.ts", "children": [] }]
-        }
-    ]
-}

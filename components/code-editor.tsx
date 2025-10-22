@@ -1,5 +1,5 @@
 import Editor, { Monaco } from '@monaco-editor/react'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import * as monacoEditor from 'monaco-editor'
 import { useTheme } from 'next-themes'
 // @ts-ignore
@@ -14,14 +14,18 @@ export function CodeEditor({
     lang: string
     onChange: (value: string | undefined) => void
 }) {
+    useEffect(() => {
+        console.log('language', lang)
+    }, [lang])
+
     const { theme } = useTheme()
     const editorRef = useRef<monacoEditor.editor.IStandaloneCodeEditor | null>(
-        null,
+        null
     )
 
     function handleEditorDidMount(
         editor: monacoEditor.editor.IStandaloneCodeEditor,
-        monaco: Monaco,
+        monaco: Monaco
     ) {
         editorRef.current = editor
 
@@ -37,18 +41,22 @@ export function CodeEditor({
             editor.trigger('', 'editor.action.startFindReplaceAction', {})
         })
 
+        monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+            jsx: monaco.languages.typescript.JsxEmit.ReactJSX,
+            lib: ['es2020', 'dom'],
+        })
+
         // Format document (Alt + Shift + F)
         editor.addCommand(
             monaco.KeyMod.Alt | monaco.KeyMod.Shift | monaco.KeyCode.KeyF,
             () => {
                 editor.trigger('', 'editor.action.formatDocument', {})
-            },
+            }
         )
     }
 
     return (
         <Editor
-            height="100%"
             language={lang}
             value={code}
             onChange={onChange}

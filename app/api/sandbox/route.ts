@@ -1,58 +1,29 @@
+import { buildFolderTree } from '@/helpers/helpers'
 import { FragmentSchema } from '@/lib/schema'
-import { ExecutionResultInterpreter, ExecutionResultWeb } from '@/lib/types'
+import { ExecutionResultWeb } from '@/lib/types'
 import { Sandbox } from '@e2b/code-interpreter'
-import { FileSystemNode } from '@/components/file-tree'
 
-import {} from '@e2b/code-interpreter'
+interface FileStructure {
+    id: string
+    label: string
+    children?: FileStructure[]
+}
 
-const sandboxTimeout = 10 * 60 * 1000
+const sandboxTimeout = 3_600_000 // alive for one hour
 
-const excludedPaths = ['node_modules', '.next', '.npm', '.config']
-const excludedNames = [
-    '.bash_logout',
-    '.bashrc',
-    '.profile',
-    'README.md',
-    '.update-notifier-last-checked',
-]
-
-async function fetchSandboxFiles(sbx: Sandbox): Promise<FileSystemNode[]> {
+async function fetchSandboxFiles(sbx: Sandbox): Promise<FileStructure[]> {
     try {
         // Use E2B SDK's files.list() method for robust file listing
         const filesList = await sbx.files.list('/home/user', {
             depth: 3,
             user: 'root',
         })
-        return convertE2BFilesToTree(filesList)
+
+        return buildFolderTree(filesList)
     } catch (error) {
         console.error('Error fetching sandbox files:', error)
         return []
     }
-}
-
-function convertE2BFilesToTree(e2bFiles: any[]): FileSystemNode[] {
-    return e2bFiles
-        .filter(
-            (file) =>
-                !excludedPaths.some((p) => file.path.includes(p)) &&
-                !excludedNames.includes(file.name)
-        )
-        .map((file) => {
-            console.log(`${file.name}:`, file)
-
-            const node: FileSystemNode = {
-                name: file.name,
-                isDirectory: file.isDir,
-                path: file.path,
-            }
-
-            // Recursively convert children if it's a directory
-            if (file.isDir && file.children) {
-                node.children = convertE2BFilesToTree(file.children)
-            }
-
-            return node
-        })
 }
 
 export const maxDuration = 60
@@ -104,23 +75,7 @@ export async function POST(req: Request) {
         try {
             console.log('creating sandbox', fragment.template) // nextjs-developer
 
-            sbx = await Sandbox.create(fragment.template, {
-                // nextjs-developer
-                metadata: {
-                    template: fragment.template,
-                    userID: userID ?? '',
-                    teamID: teamID ?? '',
-                },
-                timeoutMs: sandboxTimeout,
-                ...(teamID && accessToken
-                    ? {
-                          headers: {
-                              'X-Supabase-Team': teamID,
-                              'X-Supabase-Token': accessToken,
-                          },
-                      }
-                    : {}),
-            })
+            sbx = await Sandbox.connect('iqgjpxcgzqz25gmleitvu')
         } catch (e2bError: any) {
             console.error('E2B Sandbox creation failed:', e2bError)
             return new Response(
@@ -141,30 +96,6 @@ export async function POST(req: Request) {
                 await sbx.commands.run(fragment.install_dependencies_command) // npm install
             }
 
-            /* 
-            
-            
-          {
-          
-          
-          "code": [
-           
-            {
-            
-            "src/app.tsx" : "import react from "react"",
-            "src/components/toast.ts" : "export function Toast(){}"
-
-            }
-
-
-
-          ]
-          
-          }
-            
-                                                      
-            */
-
             if (fragment.code && Array.isArray(fragment.code)) {
                 await Promise.all(
                     fragment.code.map(async (file) => {
@@ -174,7 +105,10 @@ export async function POST(req: Request) {
             } else if (fragment.code !== null && fragment.code !== undefined) {
                 console.log('writing files in sbx')
 
-                await sbx.files.write(fragment.file_path, fragment.code)
+                await sbx.files.write(
+                    `/home/user/src/app/page.tsx`,
+                    fragment.code
+                )
             } else {
                 return new Response(
                     JSON.stringify({
@@ -185,28 +119,6 @@ export async function POST(req: Request) {
                         status: 400,
                         headers: { 'Content-Type': 'application/json' },
                     }
-                )
-            }
-
-            if (fragment.template === 'code-interpreter-v1') {
-                const { logs, error, results } = await sbx.runCode(
-                    fragment.code || ''
-                )
-
-                // Fetch file tree after execution
-                const files = await fetchSandboxFiles(sbx)
-
-                return new Response(
-                    JSON.stringify({
-                        sbxId: sbx?.sandboxId,
-                        template: fragment.template,
-                        stdout: logs.stdout,
-                        stderr: logs.stderr,
-                        runtimeError: error,
-                        cellResults: results,
-                        files,
-                    } as ExecutionResultInterpreter),
-                    { headers: { 'Content-Type': 'application/json' } }
                 )
             }
 

@@ -1,16 +1,24 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { FileTree, FileSystemNode } from '@/components/file-tree'
+import { useState, useEffect, useRef } from 'react'
 import { CodeEditor } from '@/components/code-editor'
 import { GitHubImport } from '@/components/github-import'
 import { useAuth } from '@/lib/auth'
 import { Button } from './ui/button'
 import { Github, FolderOpen } from 'lucide-react'
 import Spinner from './ui/spinner'
+import { TreeView } from './tree-view-component'
+import { languages } from '@/data/data'
 
 interface IDEProps {
     sandboxId?: string // Optional sandbox ID for viewing sandbox files
+}
+
+interface FileSystemNode {
+    label: string
+    path: string
+    id: string
+    children?: FileSystemNode[]
 }
 
 export function IDE({ sandboxId }: IDEProps = {}) {
@@ -21,6 +29,8 @@ export function IDE({ sandboxId }: IDEProps = {}) {
 
     const [files, setFiles] = useState<FileSystemNode[]>([])
 
+    const alreadyFetchedFilesRef = useRef(false)
+
     const [selectedFile, setSelectedFile] = useState<{
         path: string
         content: string
@@ -30,16 +40,20 @@ export function IDE({ sandboxId }: IDEProps = {}) {
 
     useEffect(() => {
         async function fetchSbxFiles() {
-            const id = 'ipox20pxhl86k9dd5gno6'
+            if (alreadyFetchedFilesRef.current) return
+
+            const id = 'iqgjpxcgzqz25gmleitvu'
 
             try {
+                alreadyFetchedFilesRef.current = true
+
                 console.log('start fetching files')
 
                 const response = await fetch(`/api/sandbox/${id}/files`)
 
                 if (response.ok) {
                     const data = await response.json()
-                    console.log('sandbox files', data)
+                    console.log('sandbox filescl', data)
                     setFiles(data.files || [])
                 } else {
                     console.error('Failed to fetch sandbox files')
@@ -63,22 +77,14 @@ export function IDE({ sandboxId }: IDEProps = {}) {
     }
 
     async function handleSelectFile(path: string) {
-        if (isSandboxMode && sandboxId) {
-            // Load file from sandbox
-            const response = await fetch(
-                `/api/sandbox/${sandboxId}/files/content?path=${encodeURIComponent(
-                    path
-                )}`
-            )
-            const { content } = await response.json()
-            setSelectedFile({ path, content })
-        } else if (session) {
-            // Load file from Supabase
-            const response = await fetch(
-                `/api/files/content?path=${encodeURIComponent(path)}`
-            )
-            const { content } = await response.json()
-            setSelectedFile({ path, content })
+        // prettier-ignore
+        try {
+            const response = await fetch(`/api/sandbox/iqgjpxcgzqz25gmleitvu/files/content?path=${encodeURIComponent(path)}`)
+            const relativePath = `.${path.split('/').slice(-1).at(0)?.split('.')[1]}`
+            const { content } = await response.json()             
+            setSelectedFile({ path: relativePath, content })
+        } catch (error) {
+            console.error('Error fetching file content:', error)
         }
     }
 
@@ -185,8 +191,8 @@ export function IDE({ sandboxId }: IDEProps = {}) {
     }
 
     return (
-        <div className="flex min-h-screen">
-            <div className="w-1/4 border-r overflow-auto">
+        <div className="flex h-full">
+            <div className="w-1/4 border-r">
                 <div className="p-2 border-b space-y-2">
                     <Button
                         // onClick={fetchFiles}
@@ -211,11 +217,16 @@ export function IDE({ sandboxId }: IDEProps = {}) {
                         </Button>
                     )}
                 </div>
-                <FileTree
-                    files={files}
-                    onSelectFile={handleSelectFile}
-                    onCreateFile={handleCreateFile}
-                    onDeleteFile={handleDeleteFile}
+                <TreeView
+                    data={files}
+                    onNodeClick={async (node: any) => {
+                        console.log('Clicked:', node.type)
+                        if (node.type !== 'file') return
+                        const relativePath = node.path.replace('home/user', '')
+                        handleSelectFile(relativePath)
+                    }}
+                    defaultExpandedIds={['1']}
+                    className="border-none"
                 />
             </div>
             <div className="w-3/4">
@@ -223,9 +234,7 @@ export function IDE({ sandboxId }: IDEProps = {}) {
                     <CodeEditor
                         key={selectedFile.path}
                         code={selectedFile.content}
-                        lang={
-                            selectedFile.path.split('.').pop() || 'typescript'
-                        }
+                        lang={languages[selectedFile.path ?? '.tsx']}
                         onChange={(content) =>
                             handleSaveFile(selectedFile.path, content || '')
                         }

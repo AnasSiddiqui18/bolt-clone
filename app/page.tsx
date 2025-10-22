@@ -87,9 +87,9 @@ export default function Home() {
     const [errorsEncountered, setErrorsEncountered] = useState(0)
     const [messages, setMessages] = useState<Message[]>([])
     const [fragment, setFragment] = useState<DeepPartial<FragmentSchema>>()
-    const [currentTab, setCurrentTab] = useState<'code' | 'terminal' | 'ide'>(
-        'ide'
-    )
+    const [currentTab, setCurrentTab] = useState<
+        'fragment' | 'terminal' | 'ide'
+    >('ide')
     const [selectedFile, setSelectedFile] = useState<{
         path: string
         content: string
@@ -200,7 +200,7 @@ export default function Home() {
             object: DeepPartial<FragmentSchema> | undefined
             error: any
         }) => {
-            console.log('stream response', fragment)
+            // console.log('stream response', fragment)
 
             if (!error && fragment) {
                 setIsPreviewLoading(true)
@@ -252,14 +252,14 @@ export default function Home() {
                     })
                 }
 
-                console.log(executionResult)
+                // console.log('executionResult', executionResult)
 
                 const { files, ...rest } = executionResult
 
                 setResult(rest)
                 setCurrentPreview({ fragment, result: executionResult })
                 setMessage({ result: executionResult })
-                setCurrentTab('files')
+                setCurrentTab('ide')
                 setIsPreviewLoading(false)
             }
         },
@@ -390,7 +390,7 @@ export default function Home() {
 
         const currentInput = message
         const currentFiles = files
-        setCurrentTab('code')
+        // setCurrentTab('code')
 
         const content: Message['content'] = [
             { type: 'text', text: currentInput },
@@ -525,7 +525,7 @@ export default function Home() {
         setMessages([])
         setFragment(undefined)
         setResult(undefined)
-        setCurrentTab('code')
+        // setCurrentTab('code')
         setIsPreviewLoading(false)
         setCurrentProject(null)
     }
