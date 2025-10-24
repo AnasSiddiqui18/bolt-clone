@@ -24,8 +24,10 @@ import {
     FileCode,
     FolderTree,
     Folder,
+    Eye,
 } from 'lucide-react'
-import { Dispatch, SetStateAction, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { useLocalStorage } from '@/hooks/use-locastorage'
 
 export function Preview({
     teamID,
@@ -37,7 +39,6 @@ export function Preview({
     fragment,
     result,
     onClose,
-    code,
     selectedFile,
     onSelectFile,
     onSave,
@@ -54,13 +55,14 @@ export function Preview({
     fragment?: DeepPartial<FragmentSchema>
     result?: ExecutionResult
     onClose: () => void
-    code?: string
     selectedFile?: { path: string; content: string } | null
     onSelectFile?: (file: { path: string; content: string }) => void
     onSave?: (path: string, content: string) => Promise<void>
     executeCode?: (code: string) => Promise<any>
 }) {
     const [isRefreshingFiles, setIsRefreshingFiles] = useState(false)
+    const [localStorageRes, setLocalStorageRes] = useState<ExecutionResult>()
+    const [showPreview, setShowPreview] = useState(false)
 
     async function handleSelectSandboxFile(path: string) {
         if (!result?.sbxId) return
@@ -69,7 +71,7 @@ export function Preview({
             const response = await fetch(
                 `/api/sandbox/${
                     result.sbxId
-                }/files/content?path=${encodeURIComponent(path)}`
+                }/files/content?path=${encodeURIComponent(path)}`,
             )
             const data = await response.json()
 
@@ -83,6 +85,15 @@ export function Preview({
             console.error('Error loading sandbox file:', error)
         }
     }
+
+    const [value, setValue] = useLocalStorage('result')
+
+    useEffect(() => {
+        if (result) return setValue(JSON.stringify(result))
+        if (value) {
+            setLocalStorageRes(JSON.parse(value))
+        }
+    }, [result, value])
 
     async function handleRefreshFiles() {
         if (!result?.sbxId) return
@@ -104,112 +115,71 @@ export function Preview({
     }
 
     return (
-        <div className="absolute md:relative z-10 top-0 left-0 shadow-2xl md:rounded-tl-3xl md:rounded-bl-3xl md:border-l md:border-y bg-popover w-full">
-            <Tabs
-                value={selectedTab}
-                onValueChange={(value) => {
-                    console.log('Tab changed to:', value)
-                    onSelectedTabChange(
-                        value as 'fragment' | 'terminal' | 'ide'
-                    )
-                }}
-                className="h-full flex flex-col items-start justify-start"
-            >
-                <div className="w-full p-2 grid grid-cols-3 items-center border-b relative z-10">
-                    <TooltipProvider>
-                        <Tooltip delayDuration={0}>
-                            <TooltipTrigger asChild>
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="text-muted-foreground"
-                                    onClick={onClose}
-                                >
-                                    <ChevronsRight className="h-5 w-5" />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Close sidebar</TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
-                    <div className="flex justify-center relative z-20">
-                        <TabsList className="px-1 py-0 border h-8 relative z-30">
-                            <TabsTrigger
-                                // disabled={!result}
-                                className="font-normal text-xs py-1 px-2 gap-1 flex items-center"
-                                value="fragment"
-                            >
-                                Preview
-                                {isPreviewLoading && (
-                                    <LoaderCircle
-                                        strokeWidth={3}
-                                        className="h-3 w-3 animate-spin"
-                                    />
-                                )}
-                            </TabsTrigger>
-                            <TabsTrigger
-                                disabled={!result}
-                                className="font-normal text-xs py-1 px-2 gap-1 flex items-center"
-                                value="terminal"
-                            >
-                                <Terminal className="h-3 w-3" />
-                                Terminal
-                            </TabsTrigger>
+        <div className="shadow-2xl md:rounded-tl-3xl md:rounded-bl-3xl md:border-l md:border-y bg-popover w-full overflow-hidden">
+            <div className="w-full p-2 grid grid-cols-3 items-center border-b relative z-10">
+                <div className="flex relative">
+                    <div className="flex items-center gap-px p-1 rounded-xl bg-muted/60 backdrop-blur-sm border border-border shadow-sm">
+                        <Button
+                            size="sm"
+                            variant={showPreview ? 'secondary' : 'ghost'}
+                            className={`rounded-lg transition-all duration-200 ${
+                                showPreview
+                                    ? 'bg-secondary text-white shadow-sm'
+                                    : 'hover:bg-muted/50 text-muted-foreground'
+                            }`}
+                            onClick={() => {
+                                setShowPreview(true)
+                                onSelectedTabChange?.('fragment')
+                            }}
+                        >
+                            <Eye className="text-white/80" size={18} />
+                        </Button>
 
-                            <TabsTrigger
-                                className="font-normal text-xs py-1 px-2 gap-1 flex items-center"
-                                value="ide"
-                                disabled={
-                                    !result ||
-                                    !result.files ||
-                                    result.files.length === 0
-                                }
-                            >
-                                <Folder className="h-3 w-3" />
-                                IDE
-                            </TabsTrigger>
-                        </TabsList>
-                    </div>
-                    <div className="flex items-center justify-end gap-2">
-                        {/* Add any additional buttons here */}
+                        {/* Separator */}
+                        <div className="w-px h-6 bg-border/50 mx-1" />
+
+                        <Button
+                            size="sm"
+                            variant={!showPreview ? 'secondary' : 'ghost'}
+                            className={`rounded-lg transition-all duration-200 ${
+                                !showPreview
+                                    ? 'bg-secondary text-white shadow-sm'
+                                    : 'hover:bg-muted/50 text-muted-foreground'
+                            }`}
+                            onClick={() => {
+                                setShowPreview(false)
+                                onSelectedTabChange?.('ide')
+                            }}
+                        >
+                            <Code className="text-white/80" size={18} />
+                        </Button>
                     </div>
                 </div>
-                <div className="w-full h-full">
-                    <TabsContent value="fragment" className="h-full">
-                        {result ? (
-                            <FragmentPreview
-                                result={result as ExecutionResult}
-                                code={code || fragment?.code || ''}
-                                executeCode={executeCode || (async () => {})}
-                            />
-                        ) : (
-                            <div className="flex items-center justify-center h-full text-muted-foreground">
-                                Preview will appear here once the code is
-                                executed
-                            </div>
-                        )}
-                    </TabsContent>
-                    <TabsContent value="terminal" className="h-full">
-                        {result ? (
-                            <FragmentTerminal
-                                teamID={teamID}
-                                accessToken={accessToken}
-                                result={result as ExecutionResult}
-                            />
-                        ) : (
-                            <div className="flex items-center justify-center h-full text-muted-foreground">
-                                Terminal access will appear here once the
-                                sandbox is created
-                            </div>
-                        )}
-                    </TabsContent>
+            </div>
 
-                    <TabsContent value="ide" className="h-full m-0 p-0">
-                        <div className="h-full w-full">
-                            <IDE />
+            <div className="w-full h-full">
+                <div
+                    className={`h-full w-full ${showPreview ? 'block' : 'hidden'}`}
+                >
+                    {result || localStorageRes ? (
+                        <FragmentPreview
+                            result={
+                                (result || localStorageRes) as ExecutionResult
+                            }
+                        />
+                    ) : (
+                        <div className="flex items-center justify-center h-full text-muted-foreground">
+                            Preview will appear here once the code is executed
                         </div>
-                    </TabsContent>
+                    )}
                 </div>
-            </Tabs>
+
+                <div
+                    className={`h-full w-full ${showPreview ? 'hidden' : 'block'}`}
+                >
+                    <IDE />
+                </div>
+            </div>
         </div>
     )
 }

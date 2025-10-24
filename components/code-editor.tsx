@@ -2,6 +2,10 @@ import Editor, { Monaco } from '@monaco-editor/react'
 import { useEffect, useRef } from 'react'
 import * as monacoEditor from 'monaco-editor'
 import { useTheme } from 'next-themes'
+import prettier from 'prettier/standalone'
+import * as prettierPluginEstree from 'prettier/plugins/estree'
+import * as prettierPluginTypeScript from 'prettier/plugins/typescript'
+
 // @ts-ignore
 import './code-theme.css'
 
@@ -20,21 +24,39 @@ export function CodeEditor({
 
     const { theme } = useTheme()
     const editorRef = useRef<monacoEditor.editor.IStandaloneCodeEditor | null>(
-        null
+        null,
     )
 
     function handleEditorDidMount(
         editor: monacoEditor.editor.IStandaloneCodeEditor,
-        monaco: Monaco
+        monaco: Monaco,
     ) {
         editorRef.current = editor
 
         // Quick save shortcut (Ctrl/Cmd + S)
-        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
-            // Trigger save event - the parent component should handle this
-            const currentCode = editor.getValue()
-            onChange(currentCode)
-        })
+        editor.addCommand(
+            monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS,
+            async () => {
+                // Trigger save event - the parent component should handle this
+                const currentCode = editor.getValue()
+                onChange(currentCode)
+
+                try {
+                    const formatted = await prettier.format(code, {
+                        parser: 'typescript',
+                        plugins: [prettierPluginTypeScript],
+                        semi: true,
+                        singleQuote: false,
+                        trailingComma: 'all',
+                        tabWidth: 4,
+                    })
+
+                    editor.setValue(formatted)
+                } catch (err) {
+                    console.error('Prettier formatting failed:', err)
+                }
+            },
+        )
 
         // Find and replace (Ctrl/Cmd + H) - Monaco has this built-in but let's ensure it's enabled
         editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyH, () => {
@@ -51,7 +73,7 @@ export function CodeEditor({
             monaco.KeyMod.Alt | monaco.KeyMod.Shift | monaco.KeyCode.KeyF,
             () => {
                 editor.trigger('', 'editor.action.formatDocument', {})
-            }
+            },
         )
     }
 

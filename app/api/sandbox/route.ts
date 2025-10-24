@@ -53,7 +53,7 @@ export async function POST(req: Request) {
                 {
                     status: 400,
                     headers: { 'Content-Type': 'application/json' },
-                }
+                },
             )
         }
 
@@ -67,15 +67,24 @@ export async function POST(req: Request) {
                 {
                     status: 503,
                     headers: { 'Content-Type': 'application/json' },
-                }
+                },
             )
         }
 
         let sbx
         try {
-            console.log('creating sandbox', fragment.template) // nextjs-developer
+            // console.log('creating sandbox', fragment.template) // nextjs-developer
 
-            sbx = await Sandbox.connect('iqgjpxcgzqz25gmleitvu')
+            const res = await Sandbox.create(fragment.template, {
+                metadata: { template: fragment.template },
+                timeoutMs: 36_00_000,
+            })
+
+            console.log('sandbox id', res.sandboxId)
+
+            sbx = res
+
+            // sbx = await Sandbox.connect('iwntz76rmc4v8zkhqd9rb')
         } catch (e2bError: any) {
             console.error('E2B Sandbox creation failed:', e2bError)
             return new Response(
@@ -87,7 +96,7 @@ export async function POST(req: Request) {
                 {
                     status: 503,
                     headers: { 'Content-Type': 'application/json' },
-                }
+                },
             )
         }
 
@@ -97,17 +106,12 @@ export async function POST(req: Request) {
             }
 
             if (fragment.code && Array.isArray(fragment.code)) {
+                console.log('writing files in sbx')
+
                 await Promise.all(
                     fragment.code.map(async (file) => {
                         await sbx.files.write(file.file_path, file.file_content)
-                    })
-                )
-            } else if (fragment.code !== null && fragment.code !== undefined) {
-                console.log('writing files in sbx')
-
-                await sbx.files.write(
-                    `/home/user/src/app/page.tsx`,
-                    fragment.code
+                    }),
                 )
             } else {
                 return new Response(
@@ -118,7 +122,7 @@ export async function POST(req: Request) {
                     {
                         status: 400,
                         headers: { 'Content-Type': 'application/json' },
-                    }
+                    },
                 )
             }
 
@@ -140,7 +144,7 @@ export async function POST(req: Request) {
                     url: `https://${sbx?.getHost(fragment.port || 80)}`,
                     files,
                 } as ExecutionResultWeb),
-                { headers: { 'Content-Type': 'application/json' } }
+                { headers: { 'Content-Type': 'application/json' } },
             )
         } catch (executionError: any) {
             console.error('Sandbox execution error:', executionError)
@@ -159,7 +163,7 @@ export async function POST(req: Request) {
                 {
                     status: 500,
                     headers: { 'Content-Type': 'application/json' },
-                }
+                },
             )
         }
     } catch (error: any) {
@@ -170,7 +174,7 @@ export async function POST(req: Request) {
                 type: 'unknown_error',
                 details: error?.message || 'Unknown error',
             }),
-            { status: 500, headers: { 'Content-Type': 'application/json' } }
+            { status: 500, headers: { 'Content-Type': 'application/json' } },
         )
     }
 }

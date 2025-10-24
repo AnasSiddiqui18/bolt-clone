@@ -5,6 +5,7 @@ This is an E2B sandbox template that allows you to run code in a controlled envi
 ## Prerequisites
 
 Before you begin, make sure you have:
+
 - An E2B account (sign up at [e2b.dev](https://e2b.dev))
 - Your E2B API key (get it from your [E2B dashboard](https://e2b.dev/dashboard))
 - Node.js and npm/yarn (or similar) installed
@@ -12,9 +13,9 @@ Before you begin, make sure you have:
 ## Configuration
 
 1. Create a `.env` file in your project root or set the environment variable:
-   ```
-   E2B_API_KEY=your_api_key_here
-   ```
+    ```
+    E2B_API_KEY=your_api_key_here
+    ```
 
 ## Building the Template
 

@@ -26,11 +26,11 @@ CodingIT is an **open-source AI development platform** that transforms natural l
 
 Unlike traditional AI coding assistants, CodingIT provides:
 
--   **Live Sandbox Execution** - See your code running in real-time with E2B secure containers
--   **Multi-Framework Support** - Next.js, Vue, Streamlit, Gradio, and Python data analysis
--   **50+ AI Models** - From GPT-5 and Claude 4 to local Ollama models
--   **Desktop & Web Apps** - Run locally with Electron or deploy to the cloud
--   **Production-Ready Code** - Full authentication, database, and deployment configurations
+- **Live Sandbox Execution** - See your code running in real-time with E2B secure containers
+- **Multi-Framework Support** - Next.js, Vue, Streamlit, Gradio, and Python data analysis
+- **50+ AI Models** - From GPT-5 and Claude 4 to local Ollama models
+- **Desktop & Web Apps** - Run locally with Electron or deploy to the cloud
+- **Production-Ready Code** - Full authentication, database, and deployment configurations
 
 ---
 
@@ -40,24 +40,24 @@ Unlike traditional AI coding assistants, CodingIT provides:
 
 **50+ LLM Models** across 10 providers:
 
--   **OpenAI**: GPT-5, GPT-4.5, GPT-4o, o1, o3 series
--   **Anthropic**: Claude 4.1 Opus, Claude 3.7/3.5 Sonnet, Haiku
--   **Google AI**: Gemini 2.5 Pro/Flash, Gemini 2.0, Gemini 1.5
--   **xAI**: Grok 4, Grok 3 (+ Mini/Fast variants)
--   **Mistral**: Magistral, Pixtral Large, Codestral
--   **Fireworks AI**: Qwen3 Coder 480B, DeepSeek R1, Llama 4
--   **Groq**: Ultra-fast inference with Llama 3.3
--   **DeepSeek**: DeepSeek V3 reasoning models
--   **Together AI**: Open-source model hosting
--   **Ollama**: Run models completely offline
+- **OpenAI**: GPT-5, GPT-4.5, GPT-4o, o1, o3 series
+- **Anthropic**: Claude 4.1 Opus, Claude 3.7/3.5 Sonnet, Haiku
+- **Google AI**: Gemini 2.5 Pro/Flash, Gemini 2.0, Gemini 1.5
+- **xAI**: Grok 4, Grok 3 (+ Mini/Fast variants)
+- **Mistral**: Magistral, Pixtral Large, Codestral
+- **Fireworks AI**: Qwen3 Coder 480B, DeepSeek R1, Llama 4
+- **Groq**: Ultra-fast inference with Llama 3.3
+- **DeepSeek**: DeepSeek V3 reasoning models
+- **Together AI**: Open-source model hosting
+- **Ollama**: Run models completely offline
 
 ### 🛡️ Secure Code Execution
 
--   **E2B Sandboxes**: Isolated, secure containers for code execution
--   **Live Preview**: Real-time application rendering with hot reload
--   **Package Management**: Install npm and pip packages on-the-fly
--   **Multi-Environment**: Python, Node.js, Next.js, Vue, Streamlit, Gradio
--   **File System**: Full file tree navigation and editing
+- **E2B Sandboxes**: Isolated, secure containers for code execution
+- **Live Preview**: Real-time application rendering with hot reload
+- **Package Management**: Install npm and pip packages on-the-fly
+- **Multi-Environment**: Python, Node.js, Next.js, Vue, Streamlit, Gradio
+- **File System**: Full file tree navigation and editing
 
 ### 🎨 Development Environments
 
@@ -90,12 +90,12 @@ CodingIT/
 
 ### 🔐 Enterprise Features
 
--   **Supabase Authentication** - Secure user management with Row Level Security
--   **Team Management** - Multi-user workspaces with role-based access
--   **Usage Tracking** - Monitor API calls, storage, and execution time
--   **Stripe Billing** - Pro ($9/mo) and Enterprise ($25/mo) plans
--   **Chat Persistence** - Automatic session storage with search
--   **GitHub Integration** - Import repositories directly
+- **Supabase Authentication** - Secure user management with Row Level Security
+- **Team Management** - Multi-user workspaces with role-based access
+- **Usage Tracking** - Monitor API calls, storage, and execution time
+- **Stripe Billing** - Pro ($9/mo) and Enterprise ($25/mo) plans
+- **Chat Persistence** - Automatic session storage with search
+- **GitHub Integration** - Import repositories directly
 
 ---
 
@@ -103,10 +103,10 @@ CodingIT/
 
 ### Prerequisites
 
--   [Node.js](https://nodejs.org) v18+ and npm
--   [pnpm](https://pnpm.io) v10.17+
--   [E2B API Key](https://e2b.dev/dashboard) (for code execution)
--   AI Provider API Key (OpenAI, Anthropic, etc.)
+- [Node.js](https://nodejs.org) v18+ and npm
+- [pnpm](https://pnpm.io) v10.17+
+- [E2B API Key](https://e2b.dev/dashboard) (for code execution)
+- AI Provider API Key (OpenAI, Anthropic, etc.)
 
 ### Installation
 
@@ -189,44 +189,44 @@ pnpm desktop:dev
 
 ### Core Framework
 
--   **Next.js 14** - React framework with App Router & Server Actions
--   **TypeScript** - Type-safe development
--   **Remix + Electron** - Desktop application framework
--   **pnpm Workspaces** - Monorepo package management
+- **Next.js 14** - React framework with App Router & Server Actions
+- **TypeScript** - Type-safe development
+- **Remix + Electron** - Desktop application framework
+- **pnpm Workspaces** - Monorepo package management
 
 ### UI/UX
 
--   **shadcn/ui** - Beautiful, accessible component library
--   **TailwindCSS** - Utility-first CSS framework
--   **Framer Motion** - Smooth animations
--   **Radix UI** - Unstyled, accessible primitives
--   **Lucide React** - Icon system
+- **shadcn/ui** - Beautiful, accessible component library
+- **TailwindCSS** - Utility-first CSS framework
+- **Framer Motion** - Smooth animations
+- **Radix UI** - Unstyled, accessible primitives
+- **Lucide React** - Icon system
 
 ### AI & Code Execution
 
--   **Vercel AI SDK** - Streaming AI responses
--   **E2B SDK** - Secure code execution sandboxes
--   **Monaco Editor** - VS Code-powered code editor
--   **Prism** - Syntax highlighting
+- **Vercel AI SDK** - Streaming AI responses
+- **E2B SDK** - Secure code execution sandboxes
+- **Monaco Editor** - VS Code-powered code editor
+- **Prism** - Syntax highlighting
 
 ### Database & Auth
 
--   **Supabase** - PostgreSQL database with RLS
--   **Supabase Auth** - User authentication & management
--   **Cloudflare D1** - SQLite for desktop app
+- **Supabase** - PostgreSQL database with RLS
+- **Supabase Auth** - User authentication & management
+- **Cloudflare D1** - SQLite for desktop app
 
 ### Payments & Analytics
 
--   **Stripe** - Subscription billing
--   **PostHog** - Product analytics
--   **Vercel Analytics** - Performance monitoring
+- **Stripe** - Subscription billing
+- **PostHog** - Product analytics
+- **Vercel Analytics** - Performance monitoring
 
 ### Infrastructure
 
--   **Vercel** - Web app deployment
--   **E2B** - Cloud sandbox execution
--   **Upstash** - Rate limiting
--   **AWS S3** - File storage (optional)
+- **Vercel** - Web app deployment
+- **E2B** - Cloud sandbox execution
+- **Upstash** - Rate limiting
+- **AWS S3** - File storage (optional)
 
 ---
 
@@ -369,47 +369,47 @@ We welcome contributions! See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for gui
 
 ### Areas We Need Help
 
--   🐛 Bug fixes and testing
--   📝 Documentation improvements
--   🎨 UI/UX enhancements
--   🌐 Internationalization (i18n)
--   🔌 New LLM provider integrations
--   📦 Additional sandbox templates
+- 🐛 Bug fixes and testing
+- 📝 Documentation improvements
+- 🎨 UI/UX enhancements
+- 🌐 Internationalization (i18n)
+- 🔌 New LLM provider integrations
+- 📦 Additional sandbox templates
 
 ---
 
 ## 📊 Project Stats
 
--   **Lines of Code**: 50,000+
--   **Components**: 40+ React components
--   **API Routes**: 25+ endpoints
--   **Database Tables**: 24 Supabase tables
--   **Supported Models**: 50+ AI models
--   **Contributors**: 8 active contributors
--   **Stars**: 97+ GitHub stars
--   **Deployments**: 221+ production deploys
+- **Lines of Code**: 50,000+
+- **Components**: 40+ React components
+- **API Routes**: 25+ endpoints
+- **Database Tables**: 24 Supabase tables
+- **Supported Models**: 50+ AI models
+- **Contributors**: 8 active contributors
+- **Stars**: 97+ GitHub stars
+- **Deployments**: 221+ production deploys
 
 ---
 
 ## 📝 Documentation
 
--   **[Complete Documentation](https://docs.codinit.dev)** - Full platform guide
--   **[Workspace Guide](./WORKSPACE.md)** - Monorepo architecture & commands
--   **[Desktop App Docs](https://gerome-elassaad.github.io/codinit-app)** - Native app features
--   **[Changelog](./CHANGELOG.md)** - Version history & updates
--   **[Contributing Guide](.github/CONTRIBUTING.md)** - Contribution guidelines
+- **[Complete Documentation](https://docs.codinit.dev)** - Full platform guide
+- **[Workspace Guide](./WORKSPACE.md)** - Monorepo architecture & commands
+- **[Desktop App Docs](https://gerome-elassaad.github.io/codinit-app)** - Native app features
+- **[Changelog](./CHANGELOG.md)** - Version history & updates
+- **[Contributing Guide](.github/CONTRIBUTING.md)** - Contribution guidelines
 
 ---
 
 ## 🔒 Security
 
--   **E2B Sandboxes**: Isolated code execution prevents system access
--   **Row Level Security**: Database-level access control
--   **API Key Management**: Secure credential storage
--   **Rate Limiting**: Prevents abuse with Upstash Redis
--   **Input Validation**: Comprehensive sanitization
--   **HTTPS Only**: Encrypted connections
--   **Webhook Verification**: Stripe signature validation
+- **E2B Sandboxes**: Isolated code execution prevents system access
+- **Row Level Security**: Database-level access control
+- **API Key Management**: Secure credential storage
+- **Rate Limiting**: Prevents abuse with Upstash Redis
+- **Input Validation**: Comprehensive sanitization
+- **HTTPS Only**: Encrypted connections
+- **Webhook Verification**: Stripe signature validation
 
 ---
 
@@ -423,12 +423,12 @@ This project is licensed under the **Apache License 2.0** - see the [LICENSE](./
 
 Built with these amazing open-source projects:
 
--   [E2B](https://e2b.dev) - Secure code execution infrastructure
--   [Supabase](https://supabase.com) - Open-source Firebase alternative
--   [Vercel](https://vercel.com) - Deployment and hosting platform
--   [shadcn/ui](https://ui.shadcn.com) - Re-usable component library
--   [Vercel AI SDK](https://sdk.vercel.ai) - AI integration framework
--   All the AI providers powering intelligent code generation
+- [E2B](https://e2b.dev) - Secure code execution infrastructure
+- [Supabase](https://supabase.com) - Open-source Firebase alternative
+- [Vercel](https://vercel.com) - Deployment and hosting platform
+- [shadcn/ui](https://ui.shadcn.com) - Re-usable component library
+- [Vercel AI SDK](https://sdk.vercel.ai) - AI integration framework
+- All the AI providers powering intelligent code generation
 
 Special thanks to our contributors and the open-source community!
 
@@ -442,9 +442,9 @@ Special thanks to our contributors and the open-source community!
 
 ## 📞 Support & Community
 
--   💬 **Discord**: [Join our community](https://discord.gg/codinit) _(coming soon)_
--   🐛 **Bug Reports**: [GitHub Issues](https://github.com/Gerome-Elassaad/CodingIT/issues)
--   📖 **Documentation**: [docs.codinit.dev](https://docs.codinit.dev)
+- 💬 **Discord**: [Join our community](https://discord.gg/codinit) _(coming soon)_
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/Gerome-Elassaad/CodingIT/issues)
+- 📖 **Documentation**: [docs.codinit.dev](https://docs.codinit.dev)
 
 ---
 

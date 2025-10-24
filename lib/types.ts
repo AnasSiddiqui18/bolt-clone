@@ -20,4 +20,4 @@ export type ExecutionResultWeb = ExecutionResultBase & {
     url: string
 }
 
-export type ExecutionResult = ExecutionResultInterpreter | ExecutionResultWeb
+export type ExecutionResult = ExecutionResultWeb

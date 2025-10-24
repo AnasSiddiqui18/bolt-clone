@@ -55,30 +55,38 @@ export function getModelClient(model: LLMModel, config: LLMModelConfig) {
                 baseURL: baseURL || 'https://api.fireworks.ai/inference/v1',
             })(modelNameString),
         vertex: () => {
+            // Try to parse as JSON first (service account credentials)
             const vertexCredentials = process.env.GOOGLE_VERTEX_CREDENTIALS
 
-            // Handle both API key and JSON credentials
-            if (!vertexCredentials) {
-                // Fallback to Google AI SDK if no Vertex credentials
-                return createGoogleGenerativeAI({
-                    apiKey: apiKey || process.env.GOOGLE_AI_API_KEY,
-                })(modelNameString)
-            }
-
-            // Try to parse as JSON first (service account credentials)
             try {
+                // Handle both API key and JSON credentials
+                if (!vertexCredentials) {
+                    console.log(
+                        'vertex creds not found',
+                        apiKey,
+                        process.env.GOOGLE_AI_API_KEY,
+                    )
+
+                    // Fallback to Google AI SDK if no Vertex credentials
+
+                    return createGoogleGenerativeAI()(modelNameString)
+                }
+
                 const credentials = JSON.parse(vertexCredentials)
                 return createVertex({
                     googleAuthOptions: { credentials },
                 })(modelNameString)
-            } catch {
+            } catch (error) {
+                console.error('Something went wrong', error)
+                return null
+
                 // If not JSON, treat as API key and use Google AI SDK instead
-                return createGoogleGenerativeAI({
-                    apiKey:
-                        vertexCredentials ||
-                        apiKey ||
-                        process.env.GOOGLE_AI_API_KEY,
-                })(modelNameString)
+                // return createGoogleGenerativeAI({
+                //     apiKey:
+                //         vertexCredentials ||
+                //         apiKey ||
+                //         process.env.GOOGLE_AI_API_KEY,
+                // })(modelNameString)
             }
         },
         xai: () =>

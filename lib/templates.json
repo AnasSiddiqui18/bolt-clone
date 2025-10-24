@@ -2,7 +2,7 @@
     "nextjs-developer-1760834380035": {
         "name": "Next.js developer",
         "lib": [
-            "nextjs@14.2.5",
+            "nextjs@15.1.3",
             "typescript",
             "@types/node",
             "@types/react",
@@ -11,7 +11,7 @@
             "tailwindcss",
             "shadcn"
         ],
-        "file": "src/app.tsx",
+        "file": "src/app/page.tsx",
         "instructions": "A Next.js 15+ app that reloads automatically. Using the app router.",
         "port": 3000
     }

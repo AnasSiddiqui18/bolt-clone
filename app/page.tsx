@@ -39,7 +39,7 @@ const PricingModal = dynamic(
         })),
     {
         ssr: false,
-    }
+    },
 )
 
 const Sidebar = dynamic(
@@ -49,7 +49,7 @@ const Sidebar = dynamic(
         })),
     {
         ssr: false,
-    }
+    },
 )
 
 const Preview = dynamic(
@@ -59,7 +59,7 @@ const Preview = dynamic(
         })),
     {
         ssr: false,
-    }
+    },
 )
 
 export default function Home() {
@@ -71,11 +71,11 @@ export default function Home() {
         'languageModel',
         {
             model: 'claude-3-5-sonnet-latest',
-        }
+        },
     )
     const [useMorphApply, setUseMorphApply] = useLocalStorage(
         'useMorphApply',
-        process.env.NEXT_PUBLIC_USE_MORPH_APPLY === 'true'
+        process.env.NEXT_PUBLIC_USE_MORPH_APPLY === 'true',
     )
 
     const posthog = usePostHog()
@@ -105,14 +105,14 @@ export default function Home() {
         (isOpen: boolean) => {
             setAuthDialog(isOpen)
         },
-        [setAuthDialog]
+        [setAuthDialog],
     )
 
     const setAuthViewCallback = useCallback(
         (view: ViewType) => {
             setAuthView(view)
         },
-        [setAuthView]
+        [setAuthView],
     )
     const [errorMessage, setErrorMessage] = useState('')
 
@@ -137,13 +137,15 @@ export default function Home() {
     })
 
     const currentModel = filteredModels.find(
-        (model: any) => model.id === languageModel.model
+        (model: any) => model.id === languageModel.model,
     )
 
     // Determine which API to use based on morph toggle and existing fragment
-    const shouldUseMorph =
-        useMorphApply && fragment && fragment.code && fragment.file_path
-    const apiEndpoint = shouldUseMorph ? '/api/morph-chat' : '/api/chat'
+    // const shouldUseMorph =
+
+    //     useMorphApply && fragment && fragment.code && fragment.code
+
+    const apiEndpoint = '/api/chat'
 
     const { object, submit, isLoading, stop, error } = useObject({
         api: apiEndpoint,
@@ -193,6 +195,7 @@ export default function Home() {
             setIsRateLimited(isRateLimit)
             setErrorMessage(displayMessage)
         },
+
         onFinish: async ({
             object: fragment,
             error,
@@ -200,9 +203,9 @@ export default function Home() {
             object: DeepPartial<FragmentSchema> | undefined
             error: any
         }) => {
-            // console.log('stream response', fragment)
-
             if (!error && fragment) {
+                console.log('fragment', fragment)
+
                 setIsPreviewLoading(true)
                 // Enhanced analytics tracking
                 if (fragment.code && fragment.template) {
@@ -214,6 +217,8 @@ export default function Home() {
                 })
 
                 // TODO add gemini api key and inspect the logs
+
+                console.log('calling /api/sandbox')
 
                 const response = await fetch('/api/sandbox', {
                     method: 'POST',
@@ -233,7 +238,7 @@ export default function Home() {
                     console.error('Sandbox creation failed:', errorResult)
                     setErrorMessage(
                         errorResult.error ||
-                            'Failed to create sandbox environment'
+                            'Failed to create sandbox environment',
                     )
                     setIsPreviewLoading(false)
                     return
@@ -259,7 +264,7 @@ export default function Home() {
                 setResult(rest)
                 setCurrentPreview({ fragment, result: executionResult })
                 setMessage({ result: executionResult })
-                setCurrentTab('ide')
+                // setCurrentTab('ide')
                 setIsPreviewLoading(false)
             }
         },
@@ -275,7 +280,7 @@ export default function Home() {
             setIsLoadingProject(true)
             const projectMessages = await getProjectMessages(
                 supabase,
-                currentProject.id
+                currentProject.id,
             )
             setMessages(projectMessages)
             setIsLoadingProject(false)
@@ -295,7 +300,7 @@ export default function Home() {
                 supabase,
                 currentProject.id,
                 lastMessage,
-                sequenceNumber
+                sequenceNumber,
             )
         }
 
@@ -424,9 +429,6 @@ export default function Home() {
             template: templateToSend,
             model: currentModel,
             config: languageModel,
-            ...(shouldUseMorph && fragment
-                ? { currentFragment: fragment }
-                : {}),
         })
 
         if (!currentProject) {
@@ -438,7 +440,7 @@ export default function Home() {
                         title,
                         selectedTemplate === 'auto'
                             ? undefined
-                            : selectedTemplate
+                            : selectedTemplate,
                     )
                     if (newProject) {
                         setCurrentProject(newProject)
@@ -477,9 +479,6 @@ export default function Home() {
             template: templates,
             model: currentModel,
             config: languageModel,
-            ...(shouldUseMorph && fragment
-                ? { currentFragment: fragment }
-                : {}),
         })
     }
 
@@ -556,7 +555,7 @@ export default function Home() {
                             path,
                             content,
                         }),
-                    }
+                    },
                 )
 
                 if (response.ok) {
@@ -567,7 +566,7 @@ export default function Home() {
                 } else {
                     console.error(
                         'Failed to save sandbox file:',
-                        response.statusText
+                        response.statusText,
                     )
                 }
             } else {
@@ -686,7 +685,7 @@ export default function Home() {
             <div
                 className={cn(
                     'grid w-full md:grid-cols-2 transition-all duration-300',
-                    session ? 'ml-16' : ''
+                    session ? 'ml-16' : '',
                 )}
             >
                 <div
@@ -779,7 +778,6 @@ export default function Home() {
                     setFragment(undefined)
                     setIsPreviewPanelOpen(false)
                 }}
-                code={fragment?.code || ''}
                 selectedFile={selectedFile}
                 onSelectFile={setSelectedFile}
                 onSave={handleSaveFile}

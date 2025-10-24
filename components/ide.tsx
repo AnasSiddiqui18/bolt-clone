@@ -9,6 +9,8 @@ import { Github, FolderOpen } from 'lucide-react'
 import Spinner from './ui/spinner'
 import { TreeView } from './tree-view-component'
 import { languages } from '@/data/data'
+import { useLocalStorage } from '@/hooks/use-locastorage'
+import { Separator } from './ui/separator'
 
 interface IDEProps {
     sandboxId?: string // Optional sandbox ID for viewing sandbox files
@@ -19,19 +21,24 @@ interface FileSystemNode {
     path: string
     id: string
     children?: FileSystemNode[]
+    type: 'file' | 'dir'
 }
+
+let sbxId = 'i6966ohkkvvcrawaey0rm'
 
 export function IDE({ sandboxId }: IDEProps = {}) {
     const { session, loading } = useAuth(
         () => {},
-        () => {}
+        () => {},
     )
 
     const [files, setFiles] = useState<FileSystemNode[]>([])
+    const [value, setValue] = useLocalStorage('files')
 
     const alreadyFetchedFilesRef = useRef(false)
 
     const [selectedFile, setSelectedFile] = useState<{
+        extension: string
         path: string
         content: string
     } | null>(null)
@@ -40,33 +47,37 @@ export function IDE({ sandboxId }: IDEProps = {}) {
 
     useEffect(() => {
         async function fetchSbxFiles() {
-            if (alreadyFetchedFilesRef.current) return
-
-            const id = 'iqgjpxcgzqz25gmleitvu'
-
             try {
                 alreadyFetchedFilesRef.current = true
 
-                console.log('start fetching files')
-
-                const response = await fetch(`/api/sandbox/${id}/files`)
+                const response = await fetch(`/api/sandbox/${sbxId}/files`)
 
                 if (response.ok) {
                     const data = await response.json()
                     console.log('sandbox filescl', data)
-                    setFiles(data.files || [])
+                    const filesData = data.files || []
+                    setFiles(filesData)
+                    setValue(JSON.stringify(filesData))
                 } else {
                     console.error('Failed to fetch sandbox files')
-                    setFiles([])
                 }
             } catch (error) {
                 console.error('Error fetching sandbox files:', error)
-                setFiles([])
             }
         }
 
-        fetchSbxFiles()
-    }, [])
+        if (!value) {
+            fetchSbxFiles()
+            return
+        }
+
+        const parsed = JSON.parse(value)
+        setFiles(parsed)
+
+        return () => {
+            console.log('IDE component unmount')
+        }
+    }, [value])
 
     if (loading) {
         return (
@@ -79,16 +90,28 @@ export function IDE({ sandboxId }: IDEProps = {}) {
     async function handleSelectFile(path: string) {
         // prettier-ignore
         try {
-            const response = await fetch(`/api/sandbox/iqgjpxcgzqz25gmleitvu/files/content?path=${encodeURIComponent(path)}`)
-            const relativePath = `.${path.split('/').slice(-1).at(0)?.split('.')[1]}`
+            const response = await fetch(`/api/sandbox/${sbxId}/files/content?path=${encodeURIComponent(path)}`)
+            const fileEx = `.${path.split('/').slice(-1).at(0)?.split('.')[1]}`
             const { content } = await response.json()             
-            setSelectedFile({ path: relativePath, content })
+            setSelectedFile({ path: path, extension: fileEx,  content })
         } catch (error) {
             console.error('Error fetching file content:', error)
         }
     }
 
     async function handleSaveFile(path: string, content: string) {
+        console.log('saving file', path)
+
+        await fetch(`/api/sandbox/${sbxId}/files/content`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ path, content }),
+        })
+
+        return
+
         if (isSandboxMode && sandboxId) {
             // Save file to sandbox
             await fetch(`/api/sandbox/${sandboxId}/files/content`, {
@@ -167,12 +190,9 @@ export function IDE({ sandboxId }: IDEProps = {}) {
         }
     }
 
-    async function handleImportRepository(repo: any, repoFiles: any[]) {
+    async function handleImportRepository() {
         if (!session) return
         try {
-            // The files have been imported via the GitHubImport component
-            // Just refresh the file list to show the newly imported files
-            // await fetchFiles()
             setShowGitHubImport(false)
         } catch (error) {
             console.error('Error after repository import:', error)
@@ -192,49 +212,57 @@ export function IDE({ sandboxId }: IDEProps = {}) {
 
     return (
         <div className="flex h-full">
-            <div className="w-1/4 border-r">
-                <div className="p-2 border-b space-y-2">
+            <div className="h-full flex flex-col bg-muted/20 border-r border-border p-3">
+                {/* --- Action Buttons --- */}
+                <div className="space-y-2 mb-4">
                     <Button
-                        // onClick={fetchFiles}
-                        className="w-full"
+                        className="w-full justify-start font-medium text-sm"
                         variant="outline"
                         size="sm"
                     >
-                        <FolderOpen className="h-4 w-4 mr-2" />
+                        <FolderOpen className="h-4 w-4 mr-2 opacity-80" />
                         {isSandboxMode
                             ? 'Refresh Sandbox Files'
                             : 'Refresh Files'}
                     </Button>
+
                     {!isSandboxMode && (
                         <Button
                             onClick={() => setShowGitHubImport(true)}
-                            className="w-full"
+                            className="w-full justify-start font-medium text-sm"
                             variant="outline"
                             size="sm"
                         >
-                            <Github className="h-4 w-4 mr-2" />
+                            <Github className="h-4 w-4 mr-2 opacity-80" />
                             Import from GitHub
                         </Button>
                     )}
                 </div>
-                <TreeView
-                    data={files}
-                    onNodeClick={async (node: any) => {
-                        console.log('Clicked:', node.type)
-                        if (node.type !== 'file') return
-                        const relativePath = node.path.replace('home/user', '')
-                        handleSelectFile(relativePath)
-                    }}
-                    defaultExpandedIds={['1']}
-                    className="border-none"
-                />
+
+                <Separator className="my-2" />
+
+                <div className="py-1">
+                    <TreeView
+                        data={files}
+                        onNodeClick={async (node: any) => {
+                            if (node.type !== 'file') return
+                            const relativePath = node.path.replace(
+                                'home/user',
+                                '',
+                            )
+                            handleSelectFile(relativePath)
+                        }}
+                        defaultExpandedIds={['1']}
+                        className="border-none"
+                    />
+                </div>
             </div>
             <div className="w-3/4">
                 {selectedFile ? (
                     <CodeEditor
                         key={selectedFile.path}
                         code={selectedFile.content}
-                        lang={languages[selectedFile.path ?? '.tsx']}
+                        lang={languages[selectedFile.extension ?? '.tsx']}
                         onChange={(content) =>
                             handleSaveFile(selectedFile.path, content || '')
                         }

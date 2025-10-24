@@ -7,7 +7,7 @@
         "dev:webpack": "next dev",
         "build": "next build",
         "start": "next start",
-        "lint": "next lint",
+        "lint": "tsc --noEmit && next lint",
         "format": "prettier --write .",
         "e2b:build:dev": "npx tsx sandbox-templates/nextjs-developer/build.dev.ts",
         "e2b:build:prod": "bun sandbox-templates/nextjs-developer/build.prod.ts"
@@ -74,6 +74,7 @@
         "ollama-ai-provider": "latest",
         "posthog-js": "^1.268.6",
         "posthog-node": "^5.9.1",
+        "prettier": "^3.6.2",
         "prism-code-editor": "^4.1.0",
         "prismjs": "^1.30.0",
         "react": "^18.3.1",

@@ -13,7 +13,7 @@ export const fetchCache = 'force-no-store'
  */
 export async function GET(
     _req: Request,
-    { params }: { params: { sbxId: string } }
+    { params }: { params: { sbxId: string } },
 ) {
     try {
         const { sbxId } = params
@@ -24,7 +24,7 @@ export async function GET(
                 {
                     status: 400,
                     headers: { 'Content-Type': 'application/json' },
-                }
+                },
             )
         }
 
@@ -34,7 +34,7 @@ export async function GET(
                 {
                     status: 503,
                     headers: { 'Content-Type': 'application/json' },
-                }
+                },
             )
         }
 
@@ -47,31 +47,19 @@ export async function GET(
             user: 'root',
         })
 
-        const constantFiles = [
-            {
-                name: 'tsconfig.json',
-                type: 'file',
-                path: '/home/user/tsconfig.json',
-                size: 602,
-                mode: 420,
-                permissions: '-rw-r--r--',
-                owner: 'user',
-                group: 'user',
-                modifiedTime: '2025-10-19T00:39:56.257Z',
-            },
-        ]
+        // console.log('files length', filesList)
 
         // Convert E2B file structure to our FileSystemNode format
         const files = buildFolderTree(filesList)
 
-        writeFileSync('file-list.json', JSON.stringify(filesList))
+        console.log('writing files inside file-list.json')
 
-        // console.log('writing files inside file-list.json')
+        writeFileSync('file-list.json', JSON.stringify(filesList))
 
         // writeFileSync('data.json', JSON.stringify(files))
         // console.log('files', files.length)
 
-        return new Response(JSON.stringify({ files: files }), {
+        return new Response(JSON.stringify({ files }), {
             headers: { 'Content-Type': 'application/json' },
         })
     } catch (error: any) {
@@ -81,7 +69,7 @@ export async function GET(
                 error: 'Failed to fetch sandbox files',
                 details: error?.message || 'Unknown error',
             }),
-            { status: 500, headers: { 'Content-Type': 'application/json' } }
+            { status: 500, headers: { 'Content-Type': 'application/json' } },
         )
     }
 }

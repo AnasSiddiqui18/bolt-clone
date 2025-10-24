@@ -37,7 +37,7 @@ export async function POST(req: Request) {
         ? await ratelimit(
               req.headers.get('x-forwarded-for'),
               rateLimitMaxRequests,
-              ratelimitWindow
+              ratelimitWindow,
           )
         : false
 
@@ -54,6 +54,10 @@ export async function POST(req: Request) {
     // console.log('selecting model', model, config)
 
     const modelClient = getModelClient(model, config)
+
+    // console.log('modelClient', modelClient)
+
+    if (!modelClient) return null
 
     try {
         const stream = await streamObject({

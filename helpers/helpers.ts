@@ -25,7 +25,7 @@ interface fileStructure {
 
 function addChildNodes(
     currentNode: updatedFileStructure,
-    remainingPath: string
+    remainingPath: string,
 ) {
     const pathSegments = splitPathSegments(remainingPath)
     if (!pathSegments.length) return currentNode
@@ -56,11 +56,13 @@ function addChildNodes(
 }
 
 export function buildFolderTree(files: any[]) {
+    fileStructure.length = 0
+
     files
         .filter(
             (file) =>
                 !excludedPaths.some((p) => file.path.includes(p)) &&
-                !excludedNames.includes(file.name)
+                !excludedNames.includes(file.name),
         )
         .forEach((file) => {
             if (file.type === 'file') {
@@ -77,7 +79,7 @@ export function buildFolderTree(files: any[]) {
                 if (!relativePath) return console.error('File path not found')
 
                 const doesFileAlreadyExists = fileStructure.find(
-                    (e) => e.label === file.name
+                    (e) => e.label === file.name,
                 )
 
                 if (relativePath === file.name && !doesFileAlreadyExists) {
@@ -96,13 +98,13 @@ export function buildFolderTree(files: any[]) {
                     const rootFolderName = fullPathSegments.at(0)!
 
                     const existingRootFolder = fileStructure.find(
-                        (e) => e.label === rootFolderName
+                        (e) => e.label === rootFolderName,
                     )
 
                     const splittedPath = splitPathSegments(file.path)
 
                     const index = splittedPath.findIndex(
-                        (i) => i === rootFolderName
+                        (i) => i === rootFolderName,
                     )
 
                     const path = splittedPath.slice(0, index + 1).join('/')
@@ -140,7 +142,7 @@ export function buildFolderTree(files: any[]) {
                 if (!doesRootFolderExists) {
                     const filePath = splitPathSegments(file.path)
                     const rootIndex = filePath.findIndex(
-                        (e) => e === rootFolder
+                        (e) => e === rootFolder,
                     )
                     const path = filePath.slice(0, rootIndex + 1).join('/')
 

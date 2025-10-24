@@ -446,9 +446,7 @@ export class SupabaseChatPersistence {
     /**
      * Export user's chat history
      */
-    static async exportUserData(
-        userId: string,
-    ): Promise<{
+    static async exportUserData(userId: string): Promise<{
         sessions: ChatSession[]
         messages: Record<string, ChatMessage[]>
     }> {

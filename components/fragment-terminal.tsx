@@ -6,7 +6,6 @@ import { ScrollArea } from './ui/scroll-area'
 import { ExecutionResult } from '@/lib/types'
 import { Terminal, X, Copy, RefreshCw } from 'lucide-react'
 import { useState, useRef, useEffect, KeyboardEvent } from 'react'
-import { CopyButton } from './ui/copy-button'
 
 interface TerminalEntry {
     id: string
