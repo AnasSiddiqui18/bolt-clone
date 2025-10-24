@@ -273,7 +273,7 @@ export default function Home() {
     useEffect(() => {
         async function loadProjectMessages() {
             if (!currentProject) {
-                setMessages([])
+                // setMessages([])
                 return
             }
 
@@ -282,6 +282,7 @@ export default function Home() {
                 supabase,
                 currentProject.id,
             )
+
             setMessages(projectMessages)
             setIsLoadingProject(false)
         }
@@ -371,6 +372,8 @@ export default function Home() {
     ])
 
     function setMessage(message: Partial<Message>, index?: number) {
+        // return
+
         setMessages((previousMessages) => {
             const updatedMessages = [...previousMessages]
             updatedMessages[index ?? previousMessages.length - 1] = {
@@ -521,7 +524,7 @@ export default function Home() {
 
     function handleClearChat() {
         stop()
-        setMessages([])
+        // setMessages([])
         setFragment(undefined)
         setResult(undefined)
         // setCurrentTab('code')
@@ -684,7 +687,7 @@ export default function Home() {
 
             <div
                 className={cn(
-                    'grid w-full md:grid-cols-2 transition-all duration-300',
+                    'w-full transition-all duration-300',
                     session ? 'ml-16' : '',
                 )}
             >
@@ -733,7 +736,7 @@ export default function Home() {
                         )}
                     </div>
 
-                    <div className="space-y-4 mt-4">
+                    <div className="space-y-4 mt-4 ">
                         {error && (
                             <div className="flex items-center justify-between p-2 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500 text-sm">
                                 <span>{errorMessage}</span>

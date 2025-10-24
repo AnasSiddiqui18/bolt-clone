@@ -24,7 +24,7 @@ interface FileSystemNode {
     type: 'file' | 'dir'
 }
 
-let sbxId = 'i6966ohkkvvcrawaey0rm'
+let sbxId = 'i1zjytmeuq9ncfsaqa0hv'
 
 export function IDE({ sandboxId }: IDEProps = {}) {
     const { session, loading } = useAuth(

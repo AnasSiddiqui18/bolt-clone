@@ -30,7 +30,7 @@ export function Chat({
             className="flex flex-col pb-12 gap-2 overflow-y-auto max-h-full"
         >
             {messages.length === 0 && !isLoading && (
-                <div className="flex items-center justify-center h-full text-muted-foreground text-lg font-serif">
+                <div className="flex items-center justify-center h-full text-muted-foreground text-lg">
                     Start a new conversation
                 </div>
             )}
@@ -41,7 +41,7 @@ export function Chat({
                         message.role !== 'user'
                             ? 'bg-accent dark:bg-white/5 border text-accent-foreground dark:text-muted-foreground py-4 rounded-2xl gap-4 w-full'
                             : 'bg-gradient-to-b from-black/5 to-black/10 dark:from-black/30 dark:to-black/50 py-2 rounded-xl gap-2 w-fit'
-                    } font-serif text-primary`}
+                    } text-primary`}
                     key={index}
                 >
                     {message.content.map((content, id) => {
@@ -78,10 +78,10 @@ export function Chat({
                                 />
                             </div>
                             <div className="pl-2 pr-4 flex flex-col">
-                                <span className="font-bold font-sans text-sm text-primary">
+                                <span className="font-bold text-sm text-primary">
                                     {message.object.title}
                                 </span>
-                                <span className="font-sans text-sm text-muted-foreground">
+                                <span className="text-sm text-muted-foreground">
                                     Click to see fragment
                                 </span>
                             </div>
