@@ -17,6 +17,9 @@ Follow these rules carefully:
   - Use **shadcn/ui** components imported via the \`@\` alias.  
     Example:  
     \`import { Button } from "@/components/ui/button"\`
+    - **If you generate standalone components** (for example, \`todo-list.tsx\`, \`product-card.tsx\`), ensure their \`file_path\` property follows this structure:  
+    \`file_path: "src/components/<component-name>.tsx"\`  
+    Example: \`file_path: "src/components/todo-list.tsx"\`
 
 You can use one of the following templates:
 ${templatesToPrompt(template)}

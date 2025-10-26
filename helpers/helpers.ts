@@ -5,6 +5,7 @@ import {
     isAFile,
     splitPathSegments,
 } from '@/lib/utils'
+import { writeFileSync } from 'fs'
 
 export interface updatedFileStructure {
     id: string
@@ -27,6 +28,7 @@ function addChildNodes(
     currentNode: updatedFileStructure,
     remainingPath: string,
 ) {
+    if (remainingPath.includes('ui')) return // excluding shadcn ui components
     const pathSegments = splitPathSegments(remainingPath)
     if (!pathSegments.length) return currentNode
 
@@ -155,10 +157,16 @@ export function buildFolderTree(files: any[]) {
                     }
 
                     fileStructure.push(newFolderNode)
-                    addChildNodes(newFolderNode, childPath)
 
+                    if (!childPath) return fileStructure
+
+                    // if (childPath.includes('ui')) return
+
+                    addChildNodes(newFolderNode, childPath)
                     return
                 }
+
+                // if (childPath.includes('ui')) return
 
                 addChildNodes(doesRootFolderExists, childPath)
             }
@@ -166,3 +174,21 @@ export function buildFolderTree(files: any[]) {
 
     return fileStructure
 }
+
+const test = [
+    {
+        name: 'src',
+        type: 'dir',
+        path: '/home/user/src/components',
+    },
+
+    {
+        name: 'src',
+        type: 'dir',
+        path: '/home/user/src/app/page.tsx',
+    },
+]
+
+const response = buildFolderTree(test)
+
+writeFileSync('test.json', JSON.stringify(response))

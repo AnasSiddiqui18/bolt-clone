@@ -14,11 +14,15 @@ export const fragmentSchema = z.object({
     description: z
         .string()
         .describe('Short description of the fragment. Max 1 sentence.'),
-    additional_dependencies: z
-        .array(z.string())
-        .describe(
-            'Additional dependencies required by the fragment. Do not include dependencies that are already included in the template.',
-        ),
+    additional_dependencies: z.array(z.string()).describe(`
+    A list of extra npm dependencies required by this fragment or component.
+
+    ⚙️ Instructions for the LLM:
+    - Only include dependencies that are **not already included** in the main template.
+    - For example, if your code uses the 'uuid' package for generating IDs, make sure to include "uuid" in this array.
+    - If the code imports packages like "react" or "next", DO NOT include them here — they are already part of the template dependencies.
+    - Use the **exact npm package name** (as you would in "npm install <name>").    
+`),
     has_additional_dependencies: z
         .boolean()
         .describe(
