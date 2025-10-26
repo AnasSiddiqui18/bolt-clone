@@ -11,6 +11,7 @@ import { TreeView } from './tree-view-component'
 import { languages } from '@/data/data'
 import { useLocalStorage } from '@/hooks/use-locastorage'
 import { Separator } from './ui/separator'
+import { useQuery } from '@tanstack/react-query'
 
 interface IDEProps {
     sandboxId?: string // Optional sandbox ID for viewing sandbox files
@@ -24,7 +25,7 @@ interface FileSystemNode {
     type: 'file' | 'dir'
 }
 
-let sbxId = 'i1zjytmeuq9ncfsaqa0hv'
+// let sbxId = 'ie254rqwl94z7ims7htqm'
 
 export function IDE({ sandboxId }: IDEProps = {}) {
     const { session, loading } = useAuth(
@@ -32,8 +33,7 @@ export function IDE({ sandboxId }: IDEProps = {}) {
         () => {},
     )
 
-    const [files, setFiles] = useState<FileSystemNode[]>([])
-    const [value, setValue] = useLocalStorage('files')
+    // const [files, setFiles] = useState<FileSystemNode[]>([])
 
     const alreadyFetchedFilesRef = useRef(false)
 
@@ -45,39 +45,32 @@ export function IDE({ sandboxId }: IDEProps = {}) {
     const [showGitHubImport, setShowGitHubImport] = useState(false)
     const isSandboxMode = !!sandboxId
 
-    useEffect(() => {
-        async function fetchSbxFiles() {
+    const { data: files, isFetching: isFetchingFiles } = useQuery<
+        FileSystemNode[]
+    >({
+        queryKey: ['fetch_files'],
+        refetchOnWindowFocus: false,
+        staleTime: Infinity,
+        enabled: isSandboxMode,
+        queryFn: async () => {
             try {
                 alreadyFetchedFilesRef.current = true
 
-                const response = await fetch(`/api/sandbox/${sbxId}/files`)
+                const response = await fetch(`/api/sandbox/${sandboxId}/files`)
 
                 if (response.ok) {
                     const data = await response.json()
                     console.log('sandbox filescl', data)
                     const filesData = data.files || []
-                    setFiles(filesData)
-                    setValue(JSON.stringify(filesData))
+                    return filesData
                 } else {
                     console.error('Failed to fetch sandbox files')
                 }
             } catch (error) {
                 console.error('Error fetching sandbox files:', error)
             }
-        }
-
-        if (!value) {
-            fetchSbxFiles()
-            return
-        }
-
-        const parsed = JSON.parse(value)
-        setFiles(parsed)
-
-        return () => {
-            console.log('IDE component unmount')
-        }
-    }, [value])
+        },
+    })
 
     if (loading) {
         return (
@@ -90,7 +83,7 @@ export function IDE({ sandboxId }: IDEProps = {}) {
     async function handleSelectFile(path: string) {
         // prettier-ignore
         try {
-            const response = await fetch(`/api/sandbox/${sbxId}/files/content?path=${encodeURIComponent(path)}`)
+            const response = await fetch(`/api/sandbox/${sandboxId}/files/content?path=${encodeURIComponent(path)}`)
             const fileEx = `.${path.split('/').slice(-1).at(0)?.split('.')[1]}`
             const { content } = await response.json()             
             setSelectedFile({ path: path, extension: fileEx,  content })
@@ -102,7 +95,7 @@ export function IDE({ sandboxId }: IDEProps = {}) {
     async function handleSaveFile(path: string, content: string) {
         console.log('saving file', path)
 
-        await fetch(`/api/sandbox/${sbxId}/files/content`, {
+        await fetch(`/api/sandbox/${sandboxId}/files/content`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -243,7 +236,7 @@ export function IDE({ sandboxId }: IDEProps = {}) {
 
                 <div className="py-1">
                     <TreeView
-                        data={files}
+                        data={files ?? []}
                         onNodeClick={async (node: any) => {
                             if (node.type !== 'file') return
                             const relativePath = node.path.replace(

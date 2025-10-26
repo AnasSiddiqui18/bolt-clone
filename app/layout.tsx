@@ -6,6 +6,7 @@ import { GeistSans } from 'geist/font/sans'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import Script from 'next/script'
+import { QueryProvider } from '@/lib/query-provider'
 
 export const metadata: Metadata = {
     metadataBase: new URL('https://codingit.vercel.app'),
@@ -82,7 +83,9 @@ export default function RootLayout({
                     disableTransitionOnChange
                 >
                     <PostHogProvider>
-                        <AuthProvider>{children}</AuthProvider>
+                        <AuthProvider>
+                            <QueryProvider>{children}</QueryProvider>
+                        </AuthProvider>
                     </PostHogProvider>
                     <Toaster />
                 </ThemeProvider>

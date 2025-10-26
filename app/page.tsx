@@ -31,6 +31,7 @@ import { useUserTeam } from '@/lib/user-team-provider'
 import { HeroPillSecond } from '@/components/announcement'
 import { SupabaseClient } from '@supabase/supabase-js'
 import models from '@/lib/models.json'
+import { useQueryClient } from '@tanstack/react-query'
 
 const PricingModal = dynamic(
     () =>
@@ -121,6 +122,7 @@ export default function Home() {
 
     const { session } = useAuth(setAuthDialogCallback, setAuthViewCallback)
     const { userTeam } = useUserTeam()
+    const cache = useQueryClient()
 
     const handleChatSelected = async (chatId: string) => {
         const project = await getProject(supabase, chatId)
@@ -264,8 +266,8 @@ export default function Home() {
                 setResult(rest)
                 setCurrentPreview({ fragment, result: executionResult })
                 setMessage({ result: executionResult })
-                // setCurrentTab('ide')
                 setIsPreviewLoading(false)
+                cache.invalidateQueries({ queryKey: ['fetch_files'] })
             }
         },
     })
@@ -424,6 +426,10 @@ export default function Home() {
                 : { [selectedTemplate]: templates[selectedTemplate] }
 
         console.log('submitting mesage')
+
+        // removing files from ls
+
+        localStorage.removeItem('files')
 
         submit({
             userID: session?.user?.id,

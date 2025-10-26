@@ -177,7 +177,7 @@ export function Preview({
                 <div
                     className={`h-full w-full ${showPreview ? 'hidden' : 'block'}`}
                 >
-                    <IDE />
+                    <IDE sandboxId={result?.sbxId} />
                 </div>
             </div>
         </div>
